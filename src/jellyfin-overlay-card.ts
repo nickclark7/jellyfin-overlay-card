@@ -25,10 +25,16 @@ const DEFAULT_ICON = "mdi:jellyfin";
 // along with it, which actually stops Jellyfin playback rather than just
 // hiding it, and leaves the dashboard underneath exactly as it was: no URL
 // change, no history entry.
+//
+// No top bar: Jellyfin runs on a different origin than the dashboard, so a
+// cross-origin iframe's content is opaque to us for input events — we can
+// never detect a tap landing on the video itself, only on our own chrome.
+// That rules out anything like "reveal controls on tap" for the whole
+// screen, so instead the close affordance is a small translucent button
+// pinned over a corner of the video at all times.
 // ---------------------------------------------------------------------------
 class JellyfinOverlay extends LitElement {
   @property({ attribute: false }) jellyfinUrl = "";
-  @property({ attribute: false }) label = DEFAULT_TITLE;
 
   static styles = css`
     :host {
@@ -37,58 +43,18 @@ class JellyfinOverlay extends LitElement {
       /* Comfortably above HA's own app-layout/header/sidebar/dialogs, all of
          which sit well under six figures. */
       z-index: 2147483000;
-      display: flex;
-      flex-direction: column;
-      background: var(--primary-background-color, #111);
-    }
-    .bar {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      /* env(safe-area-inset-*) accounts for notches and the top status bar
-         on a wall-mounted tablet; the max() keeps a sane minimum padding on
-         devices that don't report a safe-area inset at all. */
-      padding: max(env(safe-area-inset-top, 0px), 8px) max(env(safe-area-inset-right, 0px), 8px) 8px
-        max(env(safe-area-inset-left, 0px), 16px);
-      background: var(--app-header-background-color, var(--primary-background-color, #111));
-      color: var(--app-header-text-color, var(--primary-text-color, #fff));
-      border-bottom: 1px solid var(--divider-color, rgba(255, 255, 255, 0.12));
-    }
-    .title {
-      font-size: 16px;
-      font-weight: 500;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .close {
-      flex-shrink: 0;
-      border: none;
-      background: transparent;
-      color: inherit;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .close:active {
-      background: var(--divider-color, rgba(255, 255, 255, 0.12));
+      background: #111;
     }
     .frame-wrap {
-      flex: 1;
-      min-height: 0;
+      position: absolute;
+      inset: 0;
       box-sizing: border-box;
-      background: var(--primary-background-color, #111);
-      /* Left/right insets handle a landscape tablet's notch/rounded-corner
-         cutouts; the bottom inset leaves clearance above an on-screen
-         Android/iOS gesture nav bar instead of letting Jellyfin's own UI
-         render underneath it. */
-      padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+      background: #111;
+      /* With no top bar to absorb it, the top inset needs handling here too
+         now — all four sides account for a tablet's notch/rounded-corner
+         cutouts and on-screen Android/iOS gesture nav bars. */
+      padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px)
+        env(safe-area-inset-left, 0px);
     }
     iframe {
       display: block;
@@ -96,6 +62,29 @@ class JellyfinOverlay extends LitElement {
       height: 100%;
       border: 0;
       background: #000;
+    }
+    .close {
+      position: absolute;
+      top: max(env(safe-area-inset-top, 0px), 8px);
+      right: max(env(safe-area-inset-right, 0px), 8px);
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.45);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+      color: #fff;
+      cursor: pointer;
+      opacity: 0.35;
+      transition: opacity 0.15s ease;
+    }
+    .close:hover,
+    .close:focus-visible,
+    .close:active {
+      opacity: 1;
     }
   `;
 
@@ -108,12 +97,6 @@ class JellyfinOverlay extends LitElement {
 
   render() {
     return html`
-      <div class="bar">
-        <span class="title">${this.label}</span>
-        <button class="close" aria-label="Close" @click=${() => this.close()}>
-          <ha-icon icon="mdi:close"></ha-icon>
-        </button>
-      </div>
       <div class="frame-wrap">
         <iframe
           src=${this.jellyfinUrl}
@@ -121,6 +104,9 @@ class JellyfinOverlay extends LitElement {
           allowfullscreen
         ></iframe>
       </div>
+      <button class="close" aria-label="Close" @click=${() => this.close()}>
+        <ha-icon icon="mdi:close"></ha-icon>
+      </button>
     `;
   }
 }
@@ -187,10 +173,8 @@ class JellyfinOverlayCard extends LitElement {
     if (!this.config) return;
     const overlay = document.createElement("jellyfin-overlay") as HTMLElement & {
       jellyfinUrl: string;
-      label: string;
     };
     overlay.jellyfinUrl = this.config.jellyfin_url;
-    overlay.label = this.config.title ?? DEFAULT_TITLE;
     document.body.appendChild(overlay);
   }
 

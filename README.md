@@ -13,9 +13,10 @@ runs.
 ## What it does
 
 - Renders as a normal tile-style card: an icon and a name.
-- On tap, creates a full-viewport overlay on `document.body` containing a
-  slim top bar (title + close button) and an `<iframe>` pointed at your
-  Jellyfin server.
+- On tap, creates a full-viewport overlay on `document.body`: an `<iframe>`
+  pointed at your Jellyfin server, with a small translucent close button
+  pinned over a corner (no top bar — it brightens on tap/hover and stays out
+  of the way otherwise).
 - Closing the overlay removes it (and the iframe) from the DOM entirely.
 - Respects `env(safe-area-inset-*)` so it plays nicely with notches and
   on-screen Android/iOS navigation bars on a tablet.
