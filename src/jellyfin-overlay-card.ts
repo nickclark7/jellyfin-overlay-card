@@ -12,6 +12,10 @@ interface JellyfinOverlayCardConfig {
   jellyfin_url: string;
   title?: string;
   icon?: string;
+  // Pixels to shift the floating close button left from its default
+  // top-right corner position — Jellyfin's own on-screen controls (e.g. its
+  // Chromecast button) can sit in that same corner.
+  close_button_offset?: number;
 }
 
 const DEFAULT_TITLE = "Jellyfin";
@@ -35,6 +39,7 @@ const DEFAULT_ICON = "mdi:jellyfin";
 // ---------------------------------------------------------------------------
 class JellyfinOverlay extends LitElement {
   @property({ attribute: false }) jellyfinUrl = "";
+  @property({ attribute: false, type: Number }) closeButtonOffset = 0;
 
   static styles = css`
     :host {
@@ -96,6 +101,13 @@ class JellyfinOverlay extends LitElement {
   }
 
   render() {
+    // Inline style (rather than baking the offset into the static CSS)
+    // since it varies per card config; an inline "right" wins over the
+    // class rule's "right" for this element without disturbing anything
+    // else .close sets.
+    const closeStyle = this.closeButtonOffset
+      ? `right: calc(max(env(safe-area-inset-right, 0px), 8px) + ${this.closeButtonOffset}px)`
+      : nothing;
     return html`
       <div class="frame-wrap">
         <iframe
@@ -104,7 +116,7 @@ class JellyfinOverlay extends LitElement {
           allowfullscreen
         ></iframe>
       </div>
-      <button class="close" aria-label="Close" @click=${() => this.close()}>
+      <button class="close" style=${closeStyle} aria-label="Close" @click=${() => this.close()}>
         <ha-icon icon="mdi:close"></ha-icon>
       </button>
     `;
@@ -173,8 +185,10 @@ class JellyfinOverlayCard extends LitElement {
     if (!this.config) return;
     const overlay = document.createElement("jellyfin-overlay") as HTMLElement & {
       jellyfinUrl: string;
+      closeButtonOffset: number;
     };
     overlay.jellyfinUrl = this.config.jellyfin_url;
+    overlay.closeButtonOffset = this.config.close_button_offset ?? 0;
     document.body.appendChild(overlay);
   }
 
@@ -280,6 +294,22 @@ class JellyfinOverlayCardEditor extends LitElement {
           @input=${(e: Event) => this.updateConfig({ icon: (e.target as HTMLInputElement).value })}
         />
         <span class="hint">Any Material Design Icon name, e.g. mdi:jellyfin or mdi:play-box-multiple.</span>
+      </div>
+
+      <div class="row">
+        <label>Close button offset (px)</label>
+        <input
+          type="number"
+          inputmode="numeric"
+          placeholder="0"
+          .value=${this._config.close_button_offset ?? 0}
+          @input=${(e: Event) =>
+            this.updateConfig({ close_button_offset: Number((e.target as HTMLInputElement).value) || 0 })}
+        />
+        <span class="hint"
+          >Shifts the floating close button further left, in pixels — useful if it overlaps Jellyfin's own
+          on-screen controls (e.g. its Chromecast button) in that corner.</span
+        >
       </div>
     `;
   }
