@@ -53,7 +53,7 @@ runs.
 | ---------------------- | ------ | -------------- | ----------------------------------------------------------------------------------------------------------- |
 | `jellyfin_url`         | string | **required**   | Base URL of your Jellyfin web client, e.g. `http://192.168.1.50:8096/web/`                                   |
 | `title`                | string | `Jellyfin`     | Label shown on the card                                                                                     |
-| `icon`                 | string | `mdi:play-box-multiple` | Any Material Design Icon name — there's no official Jellyfin icon in MDI; `mdi:emby`/`mdi:plex` are alternatives |
+| `icon`                 | string | `jellyfin`     | `jellyfin` renders the card's built-in Jellyfin logo (there's no official one in Material Design Icons, so this bundles the real mark directly); any other value is treated as an MDI icon name, e.g. `mdi:emby` or `mdi:plex` |
 | `close_button_offset`  | number | `0`            | Shifts the floating close button left by this many pixels — useful if it overlaps Jellyfin's own on-screen controls (e.g. its Chromecast button) in that corner |
 
 A GUI editor is included — add the card from the dashboard UI ("Add Card" →
@@ -63,7 +63,7 @@ search "Jellyfin") and fill in the fields, or use YAML directly:
 type: custom:jellyfin-overlay-card
 jellyfin_url: http://192.168.1.50:8096/web/
 title: Jellyfin
-icon: mdi:play-box-multiple
+icon: jellyfin
 ```
 
 ## A note on mixed content (http vs. https)
@@ -106,4 +106,8 @@ pass.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE). The bundled Jellyfin logo mark (the default
+`icon` value) is copied from the [simple-icons](https://simpleicons.org/)
+project, CC0-licensed; "Jellyfin" and its logo are trademarks of the
+Jellyfin project, used here only to identify the service this card connects
+to.

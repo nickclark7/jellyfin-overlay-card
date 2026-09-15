@@ -19,10 +19,21 @@ interface JellyfinOverlayCardConfig {
 }
 
 const DEFAULT_TITLE = "Jellyfin";
-// There's no dedicated Jellyfin icon in Material Design Icons, so this is a
-// generic media one rather than a borrowed competitor logo (mdi:emby /
-// mdi:plex both exist, if that's preferred instead).
-const DEFAULT_ICON = "mdi:play-box-multiple";
+
+// Material Design Icons has no dedicated Jellyfin icon, so the default is a
+// sentinel (not a real "mdi:..." string) that renders the actual Jellyfin
+// logo mark inline instead — see JELLYFIN_LOGO_PATH below. "mdi:jellyfin" is
+// also treated as this sentinel since it was this card's first (broken)
+// default and may already be saved in an existing dashboard config.
+const DEFAULT_ICON = "jellyfin";
+const JELLYFIN_LOGO_ICON_VALUES = new Set(["jellyfin", "mdi:jellyfin"]);
+
+// The official Jellyfin logo mark, 24x24 viewBox, single path — copied from
+// the simple-icons project (CC0-licensed, https://simpleicons.org/) rather
+// than hosted as a separate asset file, so the card stays a single bundled
+// JS file with no extra install step.
+const JELLYFIN_LOGO_PATH =
+  "M12 .002C8.826.002-1.398 18.537.16 21.666c1.56 3.129 22.14 3.094 23.682 0C25.384 18.573 15.177 0 12 0zm7.76 18.949c-1.008 2.028-14.493 2.05-15.514 0C3.224 16.9 9.92 4.755 12.003 4.755c2.081 0 8.77 12.166 7.759 14.196zM12 9.198c-1.054 0-4.446 6.15-3.93 7.189.518 1.04 7.348 1.027 7.86 0 .511-1.027-2.874-7.19-3.93-7.19z";
 
 // ---------------------------------------------------------------------------
 // The overlay: mounted directly on document.body (not inside any dashboard
@@ -177,6 +188,13 @@ class JellyfinOverlayCard extends LitElement {
       --mdc-icon-size: 32px;
       color: var(--paper-item-icon-color, var(--state-icon-color, #44739e));
     }
+    svg.icon {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      fill: currentColor;
+      color: var(--paper-item-icon-color, var(--state-icon-color, #44739e));
+    }
     .title {
       font-size: 18px;
       font-weight: 500;
@@ -197,9 +215,12 @@ class JellyfinOverlayCard extends LitElement {
 
   render() {
     if (!this.config) return nothing;
+    const icon = this.config.icon || DEFAULT_ICON;
     return html`
       <ha-card @click=${() => this.open()}>
-        <ha-icon icon=${this.config.icon || DEFAULT_ICON}></ha-icon>
+        ${JELLYFIN_LOGO_ICON_VALUES.has(icon)
+          ? html`<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d=${JELLYFIN_LOGO_PATH}></path></svg>`
+          : html`<ha-icon icon=${icon}></ha-icon>`}
         <span class="title">${this.config.title}</span>
       </ha-card>
     `;
@@ -297,8 +318,9 @@ class JellyfinOverlayCardEditor extends LitElement {
           @input=${(e: Event) => this.updateConfig({ icon: (e.target as HTMLInputElement).value })}
         />
         <span class="hint"
-          >Any Material Design Icon name. There's no official Jellyfin icon in MDI — mdi:play-box-multiple (the
-          default), mdi:emby, and mdi:plex are reasonable options.</span
+          >Leave as "jellyfin" (the default) to use the card's built-in Jellyfin logo — there's no official one in
+          Material Design Icons, so this bundles the real mark directly. Or enter any MDI icon name instead, e.g.
+          mdi:emby or mdi:plex.</span
         >
       </div>
 
