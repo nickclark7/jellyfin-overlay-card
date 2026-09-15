@@ -1,5 +1,9 @@
 # Jellyfin Overlay Card
 
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz/docs/faq/custom_repositories/)
+[![Open your Home Assistant instance and add this repository to HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=nickclark7&repository=jellyfin-overlay-card&category=plugin)
+[![GitHub release](https://img.shields.io/github/v/release/nickclark7/jellyfin-overlay-card)](https://github.com/nickclark7/jellyfin-overlay-card/releases)
+
 A minimal Home Assistant Lovelace card that pops your Jellyfin web client out
 full-screen over the dashboard. Tap the card, Jellyfin opens on top of
 everything (header, sidebar, dialogs included); tap the close button and
