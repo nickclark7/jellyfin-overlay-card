@@ -87,23 +87,6 @@ Workarounds, in order of preference:
   both `https://` with a certificate the tablet's browser trusts), you're
   unaffected.
 
-## Development
-
-```bash
-npm install
-npm run build   # typechecks, then bundles src/ to dist/jellyfin-overlay-card.js
-```
-
-Built with [Lit](https://lit.dev) + TypeScript, bundled with `esbuild-wasm`
-(rather than native `esbuild`) so the build also works on filesystems mounted
-`noexec` — a single minified, dependency-free JS file comes out the other
-end, safe to drop straight into `/config/www/`.
-
-## Scope
-
-Jellyfin only, for now — no Stremio or other media-server support in this
-pass.
-
 ## License
 
 MIT — see [LICENSE](LICENSE). The bundled Jellyfin logo mark (the default
