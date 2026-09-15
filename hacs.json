@@ -1,0 +1,6 @@
+{
+  "name": "Jellyfin Overlay Card",
+  "content_in_root": false,
+  "filename": "jellyfin-overlay-card.js",
+  "render_readme": true
+}
