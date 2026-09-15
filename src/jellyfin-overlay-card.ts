@@ -19,7 +19,10 @@ interface JellyfinOverlayCardConfig {
 }
 
 const DEFAULT_TITLE = "Jellyfin";
-const DEFAULT_ICON = "mdi:jellyfin";
+// There's no dedicated Jellyfin icon in Material Design Icons, so this is a
+// generic media one rather than a borrowed competitor logo (mdi:emby /
+// mdi:plex both exist, if that's preferred instead).
+const DEFAULT_ICON = "mdi:play-box-multiple";
 
 // ---------------------------------------------------------------------------
 // The overlay: mounted directly on document.body (not inside any dashboard
@@ -293,7 +296,10 @@ class JellyfinOverlayCardEditor extends LitElement {
           .value=${this._config.icon ?? ""}
           @input=${(e: Event) => this.updateConfig({ icon: (e.target as HTMLInputElement).value })}
         />
-        <span class="hint">Any Material Design Icon name, e.g. mdi:jellyfin or mdi:play-box-multiple.</span>
+        <span class="hint"
+          >Any Material Design Icon name. There's no official Jellyfin icon in MDI — mdi:play-box-multiple (the
+          default), mdi:emby, and mdi:plex are reasonable options.</span
+        >
       </div>
 
       <div class="row">

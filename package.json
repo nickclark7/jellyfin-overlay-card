@@ -1,6 +1,6 @@
 {
   "name": "jellyfin-overlay-card",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Home Assistant Lovelace card that pops out a Jellyfin web client full-screen over the dashboard",
   "private": true,
   "type": "module",

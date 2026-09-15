@@ -53,7 +53,7 @@ runs.
 | ---------------------- | ------ | -------------- | ----------------------------------------------------------------------------------------------------------- |
 | `jellyfin_url`         | string | **required**   | Base URL of your Jellyfin web client, e.g. `http://192.168.1.50:8096/web/`                                   |
 | `title`                | string | `Jellyfin`     | Label shown on the card                                                                                     |
-| `icon`                 | string | `mdi:jellyfin` | Any Material Design Icon name                                                                               |
+| `icon`                 | string | `mdi:play-box-multiple` | Any Material Design Icon name — there's no official Jellyfin icon in MDI; `mdi:emby`/`mdi:plex` are alternatives |
 | `close_button_offset`  | number | `0`            | Shifts the floating close button left by this many pixels — useful if it overlaps Jellyfin's own on-screen controls (e.g. its Chromecast button) in that corner |
 
 A GUI editor is included — add the card from the dashboard UI ("Add Card" →
@@ -63,7 +63,7 @@ search "Jellyfin") and fill in the fields, or use YAML directly:
 type: custom:jellyfin-overlay-card
 jellyfin_url: http://192.168.1.50:8096/web/
 title: Jellyfin
-icon: mdi:jellyfin
+icon: mdi:play-box-multiple
 ```
 
 ## A note on mixed content (http vs. https)
